@@ -28,13 +28,11 @@ fn into_rpn(nums: &[u8], ops: &[Op]) -> Vec<Elem> {
     let ops = ops.iter().map(|&x| Elem::Op(x));
     let it = nums.interleave(ops);
 
-    let mut rpn= vec![];
+    let mut rpn = vec![];
     let mut op_stack = vec![];
     for e in it {
         match e {
-            Elem::Num(n) => {
-                rpn.push(Elem::Num(n))
-            },
+            Elem::Num(n) => rpn.push(Elem::Num(n)),
             Elem::Op(new_op) => {
                 let new_prio = prio(new_op);
                 while let Some(top) = op_stack.pop() {
@@ -47,7 +45,7 @@ fn into_rpn(nums: &[u8], ops: &[Op]) -> Vec<Elem> {
                     }
                 }
                 op_stack.push(new_op);
-            },
+            }
         }
     }
     while let Some(op) = op_stack.pop() {
@@ -66,24 +64,18 @@ fn eval_rpn(rpn: &[Elem]) -> Option<u32> {
                 let x = calc_stack.pop().unwrap();
                 // x op y
                 let z = match op {
-                    Add => {
-                        x + y
-                    },
-                    Sub => {
-                        x - y
-                    },
-                    Mul => {
-                        x * y
-                    },
+                    Add => x + y,
+                    Sub => x - y,
+                    Mul => x * y,
                     Div => {
                         if y.is_zero() {
-                            return None
+                            return None;
                         }
-                        x / y 
-                    },
+                        x / y
+                    }
                 };
                 calc_stack.push(z);
-            },
+            }
             Elem::Num(n) => {
                 calc_stack.push(Rational32::new(*n as i32, 1));
             }
@@ -109,41 +101,52 @@ mod tests {
     use super::*;
     #[test]
     fn test_rational32() {
-        let n5 = Rational32::new(5,1);
-        let n4 = Rational32::new(4,1);
-        let n0 = Rational32::new(0,1);
+        let n5 = Rational32::new(5, 1);
+        let n4 = Rational32::new(4, 1);
+        let n0 = Rational32::new(0, 1);
 
-        dbg!(n5/n4);
-        assert!(!(n5/n4).is_integer());
-        assert!((n5/n5).is_integer());
-        assert!((n0/n5).is_integer());
+        dbg!(n5 / n4);
+        assert!(!(n5 / n4).is_integer());
+        assert!((n5 / n5).is_integer());
+        assert!((n0 / n5).is_integer());
     }
     #[test]
     fn test_rpn_wiki() {
         use super::*;
-        let nums = [1,2,3,4];
+        let nums = [1, 2, 3, 4];
         let ops = [Op::Add, Op::Mul, Op::Sub];
         let rpn = into_rpn(&nums, &ops);
-        assert_eq!(rpn, vec![Elem::Num(1),Elem::Num(2),Elem::Num(3),Elem::Op(Op::Mul),Elem::Op(Op::Add),Elem::Num(4),Elem::Op(Op::Sub)]);
+        assert_eq!(
+            rpn,
+            vec![
+                Elem::Num(1),
+                Elem::Num(2),
+                Elem::Num(3),
+                Elem::Op(Op::Mul),
+                Elem::Op(Op::Add),
+                Elem::Num(4),
+                Elem::Op(Op::Sub)
+            ]
+        );
     }
     #[test]
     fn test_eval_easy() {
         use Op::*;
-        let nums = [1,2,3,4,5];
+        let nums = [1, 2, 3, 4, 5];
         let ops = [Add, Add, Add, Add];
         assert_eq!(eval(&nums, &ops), Some(15));
     }
     #[test]
     fn test_eval_29() {
         use Op::*;
-        let nums = [6,4,5,2,1];
+        let nums = [6, 4, 5, 2, 1];
         let ops = [Add, Mul, Add, Add];
         assert_eq!(eval(&nums, &ops), Some(29));
     }
     #[test]
     fn test_eval_31() {
         use Op::*;
-        let nums = [6,4,5,2,1];
+        let nums = [6, 4, 5, 2, 1];
         let ops = [Mul, Add, Add, Div];
         assert_eq!(eval(&nums, &ops), Some(31));
     }
