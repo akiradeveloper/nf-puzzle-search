@@ -10,7 +10,17 @@ fn main() {
     let mut lst = vec![];
     for nums in itertools::iproduct!(num_cand, num_cand, num_cand, num_cand, num_cand) {
         let nums = [nums.0, nums.1, nums.2, nums.3, nums.4];
-        // TODO unique filter
+
+        // all number should be unique.
+        // no? -> comment out
+        let mut h = std::collections::HashSet::new();
+        for n in nums {
+            h.insert(n);
+        }
+        if h.len() != N {
+            continue;
+        }
+
         lst.push(nums);
     }
     let mut res: Vec<([u8; N], usize)> = lst
@@ -23,7 +33,7 @@ fn main() {
     res.sort_by_key(|x| x.1);
     if let Some((nums, len)) = res.last() {
         println!("{:?} -> {}", nums, len);
-        for ops in op_search(&nums, *len) {
+        for (v, ops) in op_search(&nums, *len).iter().enumerate() {
             let mut s = String::new();
             s.push_str(&nums[0].to_string());
             for i in 0..N - 1 {
@@ -38,6 +48,9 @@ fn main() {
                 let num = nums[i + 1].to_string();
                 s.push_str(&num);
             }
+            s.push('=');
+            let ans = v.to_string();
+            s.push_str(&ans);
             println!("{s}");
         }
     } else {
