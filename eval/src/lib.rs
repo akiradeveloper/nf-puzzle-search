@@ -1,8 +1,9 @@
 use itertools::Itertools;
 use num::{Rational32, Zero};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Op {
+    #[default]
     Add,
     Sub,
     Mul,
